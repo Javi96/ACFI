@@ -1,0 +1,73 @@
+fmod NODO is
+
+	pr NAT .
+
+	sort Nodo .
+
+	var Clave Valor : Nat .
+
+	op nodo-vacio : -> Nodo [ctor] .
+
+	op nodo : Nat Nat -> Nodo [ctor] .
+
+endfm
+
+fmod ARBOL-BINARIO is
+	
+	pr NAT .
+
+	pr NODO .
+
+	sort Arbol .
+
+	op arbol-vacio : -> Arbol [ctor] .
+
+	op arbol : Nat Arbol Arbol -> Arbol [ctor] .
+
+	*** Operación mezcla para el arbol
+
+	op mezcla : Nat Nat -> Nat .
+
+	var N1 N2 : Nat .
+
+	eq mezcla(N1, N2) = N1 + N2 .
+
+	*** Operación inserta para el arbol
+
+	op inserta : Nat Arbol -> Arbol .
+
+	var Raiz Valor Res: Nat .
+	var Izq Der ResArbol: Arbol .
+
+	eq inserta(Valor, arbol-vacio) = arbol(Valor, arbol-vacio, arbol-vacio) .
+
+	ceq inserta(Valor, arbol(Raiz, Izq, Der)) = ResArbol .
+		if Raiz == Valor 
+		then ResArbol = arbol(mezcla(Raiz, Valor), Izq, Der)
+		else
+			if Valor < Raiz 
+			then inserta(Valor, Izq)
+			else inserta(Valor, Der)
+			fi .
+		fi .
+
+	*** Operación busca para el arbol
+
+	op busca : Nat Arbol -> Nat
+
+	eq busca(Valor arbol-vacio) = 0 .
+
+	ceq busca(Valor, arbol(Raiz, Izq, Der)) = Res
+		if Raiz == Valor 
+		then Res = Valor
+		else
+			if Raiz < Valor
+			then busca(Valor, Izq)
+			else busca(Valor, Der)
+			fi .
+		fi .
+
+endfm
+
+*** 1 + 2 en notación sucesor. Debe devolver s(s(s())), es decir, 3
+*** red s(0) + (s(s(0))) .
