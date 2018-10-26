@@ -1,0 +1,85 @@
+fmod NODO is
+	
+	pr NAT .
+
+	sort Nodo .
+
+	op nodo-vacio : -> Nodo [ctor] .
+
+	op nodo : Nat Nat -> Nodo [ctor] .
+
+endfm
+
+fmod ARBOL is
+	
+	pr NAT .
+
+	pr NODO .
+
+	sort Arbol .
+
+	op arbol-vacio : -> Arbol [ctor] .
+
+	op arbol : Nodo Arbol Arbol -> Arbol [ctor] .
+
+	*** Operación mezcla para el arbol
+
+	op mezcla : Nat Nat -> Nat .
+
+	vars N1 N2 : Nat .
+
+	eq mezcla(N1, N2) = N1 + N2 .
+
+	*** Operación inserta para el arbol
+
+	op inserta : Nodo Arbol -> Arbol .
+
+	vars Raiz Res Valor Clave ClaveArbol ValorArbol : Nat .
+
+	vars Izq Der ResArbol : Arbol .
+
+	eq inserta(nodo(Clave, Valor), arbol-vacio) = arbol(nodo(Clave, Valor), arbol-vacio, arbol-vacio) .
+
+	eq inserta(nodo(ClaveArbol, Valor), arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) = arbol(nodo(ClaveArbol, mezcla(Valor, ValorArbol)), Izq, Der) .
+
+	ceq inserta(nodo(Clave, Valor), arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) = arbol(nodo(ClaveArbol, ValorArbol), inserta(nodo(Clave, Valor), Izq), Der) 
+		if Clave < ClaveArbol .
+
+	ceq inserta(nodo(Clave, Valor), arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) = arbol(nodo(ClaveArbol, ValorArbol), Izq, inserta(nodo(Clave, Valor), Der)) 
+		if Clave > ClaveArbol .
+
+	op busca : Nat Arbol -> Nat .
+
+	eq busca(Clave, arbol-vacio) = 0 .  
+
+	eq busca(ClaveArbol, arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) =  ValorArbol .
+
+	ceq busca(Clave, arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) =  busca(Clave, Izq) 
+		if Clave < ClaveArbol .
+
+	ceq busca(Clave, arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) =  busca(Clave, Der) 
+		if Clave > ClaveArbol .
+
+endfm
+
+
+red inserta(nodo(3, 59), 
+	arbol(nodo(4, 18), 
+		arbol(nodo(2, 5), 	*** izq
+			arbol-vacio, 
+			arbol-vacio), 
+		arbol-vacio)) .    	*** der
+
+red inserta(nodo(2, 59), 
+	arbol(nodo(4, 18), 
+		arbol(nodo(2, 5), 	*** izq
+			arbol-vacio, 
+			arbol-vacio), 
+		arbol-vacio)) .    	*** der
+
+red busca(2, 
+	arbol(nodo(4, 18), 
+		arbol(nodo(2, 5), 	*** izq
+			arbol-vacio, 
+			arbol-vacio), 
+		arbol-vacio)) .    	*** der
