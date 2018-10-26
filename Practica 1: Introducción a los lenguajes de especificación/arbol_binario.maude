@@ -1,10 +1,8 @@
 fmod NODO is
-
+	
 	pr NAT .
 
 	sort Nodo .
-
-	var Clave Valor : Nat .
 
 	op nodo-vacio : -> Nodo [ctor] .
 
@@ -12,7 +10,7 @@ fmod NODO is
 
 endfm
 
-fmod ARBOL-BINARIO is
+fmod ARBOL is
 	
 	pr NAT .
 
@@ -22,52 +20,66 @@ fmod ARBOL-BINARIO is
 
 	op arbol-vacio : -> Arbol [ctor] .
 
-	op arbol : Nat Arbol Arbol -> Arbol [ctor] .
+	op arbol : Nodo Arbol Arbol -> Arbol [ctor] .
 
 	*** Operación mezcla para el arbol
 
 	op mezcla : Nat Nat -> Nat .
 
-	var N1 N2 : Nat .
+	vars N1 N2 : Nat .
 
 	eq mezcla(N1, N2) = N1 + N2 .
 
 	*** Operación inserta para el arbol
 
-	op inserta : Nat Arbol -> Arbol .
+	op inserta : Nodo Arbol -> Arbol .
 
-	var Raiz Valor Res: Nat .
-	var Izq Der ResArbol: Arbol .
+	vars Raiz Res Valor Clave ClaveArbol ValorArbol : Nat .
 
-	eq inserta(Valor, arbol-vacio) = arbol(Valor, arbol-vacio, arbol-vacio) .
+	vars Izq Der ResArbol : Arbol .
 
-	ceq inserta(Valor, arbol(Raiz, Izq, Der)) = ResArbol .
-		if Raiz == Valor 
-		then ResArbol = arbol(mezcla(Raiz, Valor), Izq, Der)
-		else
-			if Valor < Raiz 
-			then inserta(Valor, Izq)
-			else inserta(Valor, Der)
-			fi .
-		fi .
+	eq inserta(nodo(Clave, Valor), arbol-vacio) = arbol(nodo(Clave, Valor), arbol-vacio, arbol-vacio) .
 
-	*** Operación busca para el arbol
+	eq inserta(nodo(ClaveArbol, Valor), arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) = arbol(nodo(ClaveArbol, mezcla(Valor, ValorArbol)), Izq, Der) .
 
-	op busca : Nat Arbol -> Nat
+	ceq inserta(nodo(Clave, Valor), arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) = arbol(nodo(ClaveArbol, ValorArbol), inserta(nodo(Clave, Valor), Izq), Der) 
+		if Clave < ClaveArbol .
 
-	eq busca(Valor arbol-vacio) = 0 .
+	ceq inserta(nodo(Clave, Valor), arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) = arbol(nodo(ClaveArbol, ValorArbol), Izq, inserta(nodo(Clave, Valor), Der)) 
+		if Clave > ClaveArbol .
 
-	ceq busca(Valor, arbol(Raiz, Izq, Der)) = Res
-		if Raiz == Valor 
-		then Res = Valor
-		else
-			if Raiz < Valor
-			then busca(Valor, Izq)
-			else busca(Valor, Der)
-			fi .
-		fi .
+	op busca : Nat Arbol -> Nat .
+
+	eq busca(Clave, arbol-vacio) = 0 .  
+
+	eq busca(ClaveArbol, arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) =  ValorArbol .
+
+	ceq busca(Clave, arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) =  busca(Clave, Izq) 
+		if Clave < ClaveArbol .
+
+	ceq busca(Clave, arbol(nodo(ClaveArbol, ValorArbol), Izq, Der)) =  busca(Clave, Der) 
+		if Clave > ClaveArbol .
 
 endfm
 
-*** 1 + 2 en notación sucesor. Debe devolver s(s(s())), es decir, 3
-*** red s(0) + (s(s(0))) .
+
+red inserta(nodo(3, 59), 
+	arbol(nodo(4, 18), 
+		arbol(nodo(2, 5), 	*** izq
+			arbol-vacio, 
+			arbol-vacio), 
+		arbol-vacio)) .    	*** der
+
+red inserta(nodo(2, 59), 
+	arbol(nodo(4, 18), 
+		arbol(nodo(2, 5), 	*** izq
+			arbol-vacio, 
+			arbol-vacio), 
+		arbol-vacio)) .    	*** der
+
+red busca(2, 
+	arbol(nodo(4, 18), 
+		arbol(nodo(2, 5), 	*** izq
+			arbol-vacio, 
+			arbol-vacio), 
+		arbol-vacio)) .    	*** der
